@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Light theme — warm paper. Tokens are R G B triplets (see tailwind.config). */
+  color-scheme: light;
+  --canvas: 235 234 231;
+  --surface: 243 242 239;
+  --card: 255 255 255;
+  --ink: 17 17 17;
+  --terminal: 17 17 17;
+  --line: 227 225 221;
+  --muted: 107 106 103;
+  --accent: 17 17 17;
+
+  /* Write-up prose (modal reading pane) */
+  --prose-body: #1c1c1c;
+  --prose-head: #111111;
+  --prose-muted: #4a4a48;
+  --prose-underline: #bdbbb7;
+  --prose-marker: #9a9893;
+  --code-inline-bg: #efeeeb;
+}
+
+.dark {
+  /* Dark theme — charcoal paper, light ink. */
+  color-scheme: dark;
+  --canvas: 13 13 15;
+  --surface: 30 30 34;
+  --card: 23 23 26;
+  --ink: 236 234 231;
+  --terminal: 20 20 22;
+  --line: 44 44 49;
+  --muted: 147 145 141;
+  --accent: 42 42 48;
+
+  --prose-body: #d4d3cf;
+  --prose-head: #f2f1ee;
+  --prose-muted: #a5a39e;
+  --prose-underline: #4a4a4f;
+  --prose-marker: #6f6d69;
+  --code-inline-bg: #26262b;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+/* During a theme switch, kill transitions so every var-driven colour repaints
+   instantly (CSS transitions don't re-fire when only a custom property changes,
+   which otherwise freezes background-color on transitioning elements). */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
+
+body {
+  background-color: rgb(var(--canvas));
+  color: rgb(var(--ink));
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Thin, quiet scrollbars for terminal + modal panes. */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #cfcdc9 transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: #cfcdc9;
+  border-radius: 999px;
+}
+.scroll-thin.on-dark {
+  scrollbar-color: #3a3a3a transparent;
+}
+.scroll-thin.on-dark::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+}
+
+/* Custom list scrollbar — a touch more present, with padding + hover state. */
+.scrollbar-custom {
+  scrollbar-width: thin;
+  scrollbar-color: #d4d2ce transparent;
+}
+.scrollbar-custom::-webkit-scrollbar {
+  width: 10px;
+}
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #d4d2ce;
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #b8b6b1;
+  background-clip: content-box;
+}
+
+/* Dark-theme scrollbars */
+.dark .scroll-thin {
+  scrollbar-color: #3a3a3f transparent;
+}
+.dark .scroll-thin::-webkit-scrollbar-thumb {
+  background: #3a3a3f;
+}
+.dark .scrollbar-custom {
+  scrollbar-color: #3a3a3f transparent;
+}
+.dark .scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #3a3a3f;
+  background-clip: content-box;
+}
+.dark .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #4c4c52;
+  background-clip: content-box;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Write-up prose — Inter body, monospace code, charcoal code blocks. */
+/* ------------------------------------------------------------------ */
+.wu-prose {
+  color: var(--prose-body);
+  font-size: 1rem;
+  line-height: 1.72;
+}
+.wu-prose > * + * {
+  margin-top: 1.05em;
+}
+.wu-prose h1,
+.wu-prose h2,
+.wu-prose h3,
+.wu-prose h4 {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--prose-head);
+}
+.wu-prose h1 { font-size: 1.7rem; margin-top: 1.6em; }
+.wu-prose h2 { font-size: 1.32rem; margin-top: 1.7em; padding-bottom: 0.35rem; border-bottom: 1px solid rgb(var(--line)); }
+.wu-prose h3 { font-size: 1.1rem; margin-top: 1.4em; }
+.wu-prose a {
+  color: var(--prose-head);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--prose-underline);
+}
+.wu-prose a:hover { text-decoration-color: var(--prose-head); }
+.wu-prose strong { font-weight: 650; }
+.wu-prose ul,
+.wu-prose ol { padding-left: 1.35rem; }
+.wu-prose ul { list-style: disc; }
+.wu-prose ol { list-style: decimal; }
+.wu-prose li::marker { color: var(--prose-marker); }
+.wu-prose blockquote {
+  border-left: 3px solid var(--prose-head);
+  padding-left: 1rem;
+  color: var(--prose-muted);
+  font-style: normal;
+}
+.wu-prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(var(--line));
+}
+.wu-prose hr {
+  border: 0;
+  border-top: 1px solid rgb(var(--line));
+  margin: 2em 0;
+}
+.wu-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  display: block;
+  overflow-x: auto;
+}
+.wu-prose th,
+.wu-prose td {
+  border: 1px solid rgb(var(--line));
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.wu-prose th { background: rgb(var(--surface)); font-weight: 600; }
+
+/* Inline code — quiet chip. */
+.wu-prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--code-inline-bg);
+  border: 1px solid rgb(var(--line));
+  padding: 0.1em 0.38em;
+  border-radius: 0.375rem;
+  white-space: nowrap;
+}
