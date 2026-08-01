@@ -41,8 +41,8 @@ export const site = {
 
   // Lofi player — drop .mp3 files in /public/audio and list them here.
   tracks: [
-    { title: "zoltraak", artist: "frieren", src: "/audio/track1.mp3" },
-    { title: "track2", artist: "lofi", src: "/audio/track2.mp3" },
+    { title: "lofi", artist: "lofi", src: "/audio/track1.mp3" },
+    { title: "zoltraak", artist: "frieren", src: "/audio/track2.mp3" },
     { title: "track3", artist: "lofi", src: "/audio/track3.mp3" },
     { title: "track4", artist: "lofi", src: "/audio/track4.mp3" },
   ],
