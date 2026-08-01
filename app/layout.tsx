@@ -6,6 +6,8 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: `${site.name} — write-ups`,
   description: site.tagline,
+  // Browser tab / bookmark icon — file lives at public/favicon.ico.
+  icons: { icon: "/favicon.ico", shortcut: "/favicon.ico" },
 };
 
 // Runs before first paint to apply the saved theme (or the OS preference),
