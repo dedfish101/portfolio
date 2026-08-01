@@ -6,8 +6,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: `${site.name} — write-ups`,
   description: site.tagline,
-  // Browser tab / bookmark icon — file lives at public/favicon.ico.
-  icons: { icon: "/favicon.ico", shortcut: "/favicon.ico" },
+  // Tab icon comes from app/icon.svg + app/favicon.ico (Next's file
+  // convention), which serves them with a content hash so browsers pick up
+  // changes instead of holding a stale cached favicon. No `icons` entry
+  // needed here — declaring one would emit a second, unhashed <link>.
 };
 
 // Runs before first paint to apply the saved theme (or the OS preference),
