@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { byId, typeLabel } from '../data/catalog'
+import { typeLabel } from '../data/catalog'
+import { useMediaMap } from '../lib/media'
 import type { MediaType } from '../data/catalog'
 import { useStore, STATUS_LABELS } from '../lib/store'
 import type { WatchStatus } from '../lib/store'
@@ -29,6 +30,11 @@ export default function Dashboard() {
   const { profile, statuses, ratings, favorites, activity, user, ready } = useStore()
   const { open } = useAuthGate()
   const counts = useAuthorCounts(profile?.id ?? null)
+  const trackedIds = useMemo(
+    () => [...new Set([...Object.keys(statuses), ...Object.keys(ratings), ...favorites])],
+    [statuses, ratings, favorites],
+  )
+  const media = useMediaMap(trackedIds)
 
   const d = useMemo(() => {
     const status: Record<WatchStatus, number> = { watching: 0, completed: 0, planned: 0, dropped: 0 }
@@ -41,7 +47,7 @@ export default function Dashboard() {
 
     const tracked = new Set([...Object.keys(statuses), ...Object.keys(ratings), ...favorites])
     for (const id of tracked) {
-      const t = byId.get(id)
+      const t = media.get(id)
       if (!t) continue
       typeCount[t.type]++
       for (const g of t.genres) genre.set(g, (genre.get(g) ?? 0) + 1)
@@ -62,7 +68,7 @@ export default function Dashboard() {
     // How generous a rater you are, vs. the community score of the same titles.
     let deltaSum = 0, deltaN = 0
     for (const [id, r] of Object.entries(ratings)) {
-      const t = byId.get(id)
+      const t = media.get(id)
       if (t?.score) { deltaSum += r - t.score; deltaN++ }
     }
 
@@ -80,7 +86,7 @@ export default function Dashboard() {
       decades: [...decade.entries()].sort((a, b) => a[0].localeCompare(b[0])),
       trend: months.map(m => ({ label: m.slice(2).replace('-', '/'), value: perMonth.get(m) ?? 0 })),
     }
-  }, [statuses, ratings, favorites, activity])
+  }, [statuses, ratings, favorites, activity, media])
 
   if (!ready) return <div className="page"><p className="empty">Loading…</p></div>
 

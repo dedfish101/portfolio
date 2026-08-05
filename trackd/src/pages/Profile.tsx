@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { byId } from '../data/catalog'
+import { useMediaMap } from '../lib/media'
 import { useStore, STATUS_LABELS } from '../lib/store'
 import type { WatchStatus } from '../lib/store'
 import { useAuthorCounts } from '../lib/community'
@@ -16,6 +16,11 @@ export default function Profile() {
   const { profile, prefs, statuses, ratings, favorites, activity, user, ready } = store
   const { open } = useAuthGate()
   const counts = useAuthorCounts(profile?.id ?? null)
+  const trackedIds = useMemo(
+    () => [...new Set([...Object.keys(statuses), ...Object.keys(ratings), ...favorites])],
+    [statuses, ratings, favorites],
+  )
+  const media = useMediaMap(trackedIds)
   const [tab, setTab] = useState<typeof TABS[number]>('watching')
   const [editing, setEditing] = useState(false)
   const [draftName, setDraftName] = useState('')
@@ -31,29 +36,29 @@ export default function Profile() {
     let minutes = 0
     for (const [id, s] of Object.entries(statuses)) {
       if (s !== 'completed' && s !== 'watching') continue
-      const t = byId.get(id)
+      const t = media.get(id)
       if (!t) continue
       minutes += t.runtime ?? (t.episodes ?? 0) * 24
     }
 
     const genreCount = new Map<string, number>()
     for (const id of new Set([...Object.keys(statuses), ...Object.keys(ratings)])) {
-      const t = byId.get(id)
+      const t = media.get(id)
       if (!t) continue
       for (const g of t.genres) genreCount.set(g, (genreCount.get(g) ?? 0) + 1)
     }
     const topGenres = [...genreCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6)
 
     return { counts: c, mean, hours: Math.round(minutes / 60), topGenres, maxGenre: topGenres[0]?.[1] ?? 1, rated: vals.length }
-  }, [statuses, ratings])
+  }, [statuses, ratings, media])
 
   const tabTitles = useMemo(() => {
-    if (tab === 'favorites') return favorites.map(id => byId.get(id)).filter(t => t !== undefined)
+    if (tab === 'favorites') return favorites.map(id => media.get(id)).filter(t => t !== undefined)
     if (tab === 'ratings') {
-      return Object.entries(ratings).sort((a, b) => b[1] - a[1]).map(([id]) => byId.get(id)).filter(t => t !== undefined)
+      return Object.entries(ratings).sort((a, b) => b[1] - a[1]).map(([id]) => media.get(id)).filter(t => t !== undefined)
     }
-    return Object.entries(statuses).filter(([, s]) => s === tab).map(([id]) => byId.get(id)).filter(t => t !== undefined)
-  }, [tab, statuses, ratings, favorites])
+    return Object.entries(statuses).filter(([, s]) => s === tab).map(([id]) => media.get(id)).filter(t => t !== undefined)
+  }, [tab, statuses, ratings, favorites, media])
 
   if (!ready) return <div className="page"><p className="empty">Loading…</p></div>
 
@@ -197,7 +202,7 @@ export default function Profile() {
         {activity.length === 0 && <p className="empty">Your activity feed will appear here as you track things.</p>}
         <ul className="activity">
           {activity.slice(0, 15).map(a => {
-            const t = byId.get(a.titleId)
+            const t = media.get(a.titleId)
             return (
               <li key={a.id}>
                 <span className="muted">{a.date}</span>{' — '}

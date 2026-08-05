@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { CATALOG, typeLabel } from '../data/catalog'
+import { typeLabel } from '../data/catalog'
+import { STATIC_MEDIA } from '../lib/media'
 import { useStore, isVisible } from '../lib/store'
 import { useAuthGate } from '../components/Auth'
 import { toastError } from '../components/Toast'
@@ -8,7 +9,7 @@ import { Poster, daysUntil, formatDate, formatMembers } from '../components/ui'
 export default function Upcoming() {
   const store = useStore()
   const { require: requireAuth } = useAuthGate()
-  const upcoming = CATALOG.filter(t => t.status === 'upcoming' && isVisible(t, store.prefs))
+  const upcoming = STATIC_MEDIA.filter(t => t.status === 'upcoming' && isVisible(t, store.prefs))
     .sort((a, b) => (a.releaseDate ?? '').localeCompare(b.releaseDate ?? ''))
   const maxHype = Math.max(1, ...upcoming.map(t => t.members))
 

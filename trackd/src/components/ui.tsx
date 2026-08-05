@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { Title } from '../data/catalog'
 import { typeLabel } from '../data/catalog'
+import type { MediaItem } from '../lib/media'
+import { cacheMedia } from '../lib/media'
 import { useStore, STATUS_LABELS } from '../lib/store'
 import type { WatchStatus } from '../lib/store'
-import { posterFor } from '../lib/posters'
 import { useAuthGate } from './Auth'
 import { toastError } from './Toast'
 
@@ -24,12 +24,11 @@ const PALETTES = [
   ['#d31027', '#ea384d'],
 ]
 
-export function Poster({ title, size = 'md' }: { title: Title; size?: 'sm' | 'md' | 'lg' }) {
-  const art = posterFor(title.id)
+export function Poster({ title, size = 'md' }: { title: MediaItem; size?: 'sm' | 'md' | 'lg' }) {
   const [broken, setBroken] = useState(false)
   const [c1, c2] = PALETTES[title.palette % PALETTES.length]
   const initials = title.name.split(/\s+/).slice(0, 2).map(w => w[0]).join('')
-  const img = !broken && art?.image ? art.image : null
+  const img = !broken && title.poster ? title.poster : null
   return (
     <div className={`poster poster-${size}`} style={{ background: `linear-gradient(150deg, ${c1}, ${c2})` }}>
       {img ? (
@@ -61,7 +60,7 @@ const QUICK_OPTIONS: { status: WatchStatus; icon: string }[] = [
 const MENU_W = 190
 
 /** One-click list control that sits under a card — no need to open the title page. */
-export function QuickStatus({ titleId }: { titleId: string }) {
+export function QuickStatus({ titleId, item }: { titleId: string; item?: MediaItem }) {
   const { statuses, setStatus, favorites, toggleFavorite } = useStore()
   const { require: requireAuth } = useAuthGate()
   const current = statuses[titleId]
@@ -117,12 +116,21 @@ export function QuickStatus({ titleId }: { titleId: string }) {
   const pick = (s: WatchStatus | null) => {
     setOpen(false)
     if (!requireAuth()) return
-    setStatus(titleId, s !== null && current === s ? null : s).catch(toastError)
+    // Cache the title first, so lists can render it even if the provider is slow later.
+    const write = async () => {
+      if (item) await cacheMedia(item)
+      await setStatus(titleId, s !== null && current === s ? null : s)
+    }
+    write().catch(toastError)
   }
 
   const onFavorite = () => {
     if (!requireAuth()) return
-    toggleFavorite(titleId).catch(toastError)
+    const write = async () => {
+      if (item) await cacheMedia(item)
+      await toggleFavorite(titleId)
+    }
+    write().catch(toastError)
   }
 
   return (
@@ -177,7 +185,7 @@ export function QuickStatus({ titleId }: { titleId: string }) {
   )
 }
 
-export function TitleCard({ title, note }: { title: Title; note?: string }) {
+export function TitleCard({ title, note }: { title: MediaItem; note?: string }) {
   const { ratings } = useStore()
   const myRating = ratings[title.id]
   return (
@@ -197,7 +205,7 @@ export function TitleCard({ title, note }: { title: Title; note?: string }) {
           )}
         </div>
       </Link>
-      <QuickStatus titleId={title.id} />
+      <QuickStatus titleId={title.id} item={title} />
     </div>
   )
 }
@@ -233,7 +241,7 @@ export function Stars({ value, onChange }: { value: number | null; onChange: (v:
 
 const STATUS_ORDER: WatchStatus[] = ['watching', 'completed', 'planned', 'dropped']
 
-export function StatusPicker({ titleId }: { titleId: string }) {
+export function StatusPicker({ titleId, item }: { titleId: string; item?: MediaItem }) {
   const { statuses, setStatus } = useStore()
   const { require: requireAuth } = useAuthGate()
   const current = statuses[titleId]
@@ -245,7 +253,11 @@ export function StatusPicker({ titleId }: { titleId: string }) {
           className={`status-btn st-${s} ${current === s ? 'active' : ''}`}
           onClick={() => {
             if (!requireAuth()) return
-            setStatus(titleId, current === s ? null : s).catch(toastError)
+            const write = async () => {
+              if (item) await cacheMedia(item)
+              await setStatus(titleId, current === s ? null : s)
+            }
+            write().catch(toastError)
           }}
         >
           {STATUS_LABELS[s]}

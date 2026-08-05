@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { CATALOG } from '../data/catalog'
-import type { Title } from '../data/catalog'
+import { STATIC_MEDIA } from '../lib/media'
+import type { MediaItem } from '../lib/media'
 import { TitleCard, Row, daysUntil, formatDate } from '../components/ui'
 import { useStore, isVisible } from '../lib/store'
 import { recommend } from '../lib/recommend'
@@ -12,12 +12,12 @@ export default function Home() {
   const { open } = useAuthGate()
   const { threads } = useThreads({ limit: 3 })
   const stats = useSiteStats()
-  const vis = (t: Title) => isVisible(t, prefs)
+  const vis = (t: MediaItem) => isVisible(t, prefs)
 
-  const released = CATALOG.filter(t => t.status === 'released' && vis(t))
+  const released = STATIC_MEDIA.filter(t => t.status === 'released' && vis(t))
   const trending = [...released].sort((a, b) => b.members - a.members).slice(0, 10)
   const topRated = [...released].sort((a, b) => b.score - a.score).slice(0, 10)
-  const upcoming = CATALOG.filter(t => t.status === 'upcoming' && vis(t))
+  const upcoming = STATIC_MEDIA.filter(t => t.status === 'upcoming' && vis(t))
     .sort((a, b) => (a.releaseDate ?? '').localeCompare(b.releaseDate ?? ''))
     .slice(0, 8)
   const { recs } = recommend(ratings, statuses, favorites, 8, vis)
@@ -42,7 +42,7 @@ export default function Home() {
           )}
         </div>
         <div className="hero-stats">
-          <div><strong>{CATALOG.length}</strong><span>titles</span></div>
+          <div><strong>{STATIC_MEDIA.length}+</strong><span>titles</span></div>
           <div><strong>{stats.members}</strong><span>members</span></div>
           <div><strong>{stats.posts}</strong><span>forum posts</span></div>
         </div>

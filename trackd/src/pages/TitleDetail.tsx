@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { byId, typeLabel } from '../data/catalog'
+import { typeLabel } from '../data/catalog'
 import { useStore, isVisible } from '../lib/store'
 import { similarTo } from '../lib/recommend'
-import { posterFor } from '../lib/posters'
+import { resolveMedia } from '../lib/media'
+import type { MediaItem } from '../lib/media'
 import { useReviews, useThreads } from '../lib/community'
 import { useAuthGate } from '../components/Auth'
 import { toastError } from '../components/Toast'
@@ -11,8 +12,17 @@ import { Poster, ScorePill, Stars, StatusPicker, TitleCard, Row, daysUntil, form
 
 export default function TitleDetail() {
   const { id } = useParams()
-  const title = id ? byId.get(id) : undefined
   const store = useStore()
+  const [title, setTitle] = useState<MediaItem | null | undefined>(undefined)
+
+  // Titles may come from the bundled catalogue, the media cache, or a live provider.
+  useEffect(() => {
+    let alive = true
+    setTitle(undefined)
+    if (!id) { setTitle(null); return }
+    void resolveMedia(id).then(m => { if (alive) setTitle(m) })
+    return () => { alive = false }
+  }, [id])
   const { require: requireAuth, open } = useAuthGate()
 
   const { reviews, voted, loading: reviewsLoading, addReview, voteHelpful } =
@@ -27,12 +37,20 @@ export default function TitleDetail() {
   const [threadText, setThreadText] = useState('')
   const [busy, setBusy] = useState(false)
 
+  if (title === undefined) {
+    return <div className="page"><p className="empty">Loading title…</p></div>
+  }
   if (!title) {
-    return <div className="page"><h1 className="page-title">Title not found</h1><Link to="/browse" className="btn">Back to Browse</Link></div>
+    return (
+      <div className="page">
+        <h1 className="page-title">Title not found</h1>
+        <p className="muted">That title isn't in any catalogue we can reach right now.</p>
+        <Link to="/browse" className="btn">Back to Search</Link>
+      </div>
+    )
   }
 
   const similar = similarTo(title.id, 8).filter(t => isVisible(t, store.prefs)).slice(0, 6)
-  const ext = posterFor(title.id)
   const myRating = store.ratings[title.id] ?? null
   const isFav = store.favorites.includes(title.id)
 
@@ -92,7 +110,7 @@ export default function TitleDetail() {
           <div className="detail-score"><ScorePill score={title.score} /> <span className="muted">community score</span></div>
 
           <div className="detail-actions">
-            <StatusPicker titleId={title.id} />
+            <StatusPicker titleId={title.id} item={title} />
             <button
               className={`fav-btn ${isFav ? 'active' : ''}`}
               onClick={() => {
@@ -113,26 +131,21 @@ export default function TitleDetail() {
         </div>
       </div>
 
-      {ext && (ext.synopsis || (ext.meta?.length ?? 0) > 0 || ext.extScore) && (
+      {(title.sourceUrl || title.score > 0) && (
         <section className="panel ext-panel">
           <div className="ext-head">
             <h2>Details</h2>
-            {ext.extScore && <span className="pill pill-gold">{ext.extScore}</span>}
-            {ext.link && (
-              <a className="ext-link" href={ext.link} target="_blank" rel="noreferrer">{ext.linkLabel} ↗</a>
+            {title.score > 0 && <span className="pill pill-gold">{title.source} ★ {title.score.toFixed(1)}</span>}
+            {title.sourceUrl && (
+              <a className="ext-link" href={title.sourceUrl} target="_blank" rel="noreferrer">{title.source} ↗</a>
             )}
           </div>
-          {(ext.meta?.length ?? 0) > 0 && (
-            <div className="ext-meta">
-              {ext.meta!.map(([k, v]) => (
-                <div key={k} className="ext-meta-item">
-                  <span className="muted">{k}</span>
-                  <span>{v}</span>
-                </div>
-              ))}
-            </div>
-          )}
-          {ext.synopsis && <p className="ext-syn">{ext.synopsis}</p>}
+          <div className="ext-meta">
+            <div className="ext-meta-item"><span className="muted">Source</span><span>{title.source}</span></div>
+            {title.year > 0 && <div className="ext-meta-item"><span className="muted">Year</span><span>{title.year}</span></div>}
+            {title.episodes && <div className="ext-meta-item"><span className="muted">Episodes</span><span>{title.episodes}</span></div>}
+            {title.runtime && <div className="ext-meta-item"><span className="muted">Runtime</span><span>{title.runtime} min</span></div>}
+          </div>
         </section>
       )}
 

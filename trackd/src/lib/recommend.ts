@@ -1,9 +1,12 @@
-import { CATALOG, byId } from '../data/catalog'
-import type { Title } from '../data/catalog'
+import { STATIC_MEDIA } from './media'
+import type { MediaItem } from './media'
 import type { WatchStatus } from './store'
 
+const byId = new Map(STATIC_MEDIA.map(m => [m.id, m]))
+const CATALOG = STATIC_MEDIA
+
 export interface Recommendation {
-  title: Title
+  title: MediaItem
   score: number
   reasons: string[]
 }
@@ -29,7 +32,7 @@ export function recommend(
   statuses: Record<string, WatchStatus>,
   favorites: string[],
   limit = 12,
-  visible: (t: Title) => boolean = () => true,
+  visible: (t: MediaItem) => boolean = () => true,
   /** Bump to draw a different sample of strong candidates — powers "show me more". */
   roll = 0,
 ): { recs: Recommendation[]; topGenres: [string, number][]; poolSize: number } {
@@ -37,7 +40,7 @@ export function recommend(
   const tagPref = new Map<string, number>()
   const typePref = new Map<string, number>()
 
-  const liked: Title[] = [] // titles the user demonstrably enjoyed, for "because you liked X"
+  const liked: MediaItem[] = [] // titles the user demonstrably enjoyed, for "because you liked X"
 
   const bump = (map: Map<string, number>, key: string, w: number) => {
     map.set(key, (map.get(key) ?? 0) + w)
@@ -77,7 +80,7 @@ export function recommend(
     }),
   )
 
-  const jaccard = (a: Title, b: Title): number => {
+  const jaccard = (a: MediaItem, b: MediaItem): number => {
     const sa = new Set([...a.genres, ...a.tags])
     const sb = new Set([...b.genres, ...b.tags])
     let inter = 0
@@ -111,7 +114,7 @@ export function recommend(
     const score = affinity * 2 + prior * 0.55 + popularity
 
     const reasons: string[] = []
-    let bestSim: Title | null = null
+    let bestSim: MediaItem | null = null
     let bestSimScore = 0.24 // threshold: only claim similarity when meaningful
     for (const l of liked) {
       if (l.id === t.id) continue
@@ -154,10 +157,10 @@ export function recommend(
 }
 
 /** Similar titles for a detail page, independent of user taste. */
-export function similarTo(id: string, limit = 6): Title[] {
+export function similarTo(id: string, limit = 6): MediaItem[] {
   const base = byId.get(id)
   if (!base) return []
-  const sim = (a: Title, b: Title): number => {
+  const sim = (a: MediaItem, b: MediaItem): number => {
     const sa = new Set([...a.genres, ...a.tags])
     const sb = new Set([...b.genres, ...b.tags])
     let inter = 0

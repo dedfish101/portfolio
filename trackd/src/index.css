@@ -655,3 +655,13 @@ textarea.input { resize: vertical; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   .row-scroll .card-wrap { flex: 0 0 150px; }
 }
+
+/* ---------- Inline notices ---------- */
+.notice {
+  background: rgba(245,196,81,.09); border: 1px solid rgba(245,196,81,.3);
+  border-radius: 10px; padding: 12px 16px; margin: 14px 0 4px;
+  font-size: .88rem; color: #f0d9a0;
+}
+.notice code {
+  background: rgba(0,0,0,.3); padding: 1px 6px; border-radius: 4px; font-size: .85em;
+}

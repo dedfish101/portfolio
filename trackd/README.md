@@ -29,10 +29,32 @@ npm run dev
 - **Forums** — General / Recommendations / Upcoming boards plus per-title discussion threads.
 - **Content preferences** — hide anime, movies or series site-wide, stored per account.
 
+## Catalogue — live search
+
+Search hits real catalogues, not a fixed list:
+
+| Type | Provider | Key needed? |
+|---|---|---|
+| Anime | AniList GraphQL | No |
+| Series | TVMaze | No |
+| Movies | TMDB | **Yes** |
+
+Title ids are namespaced by provider (`anilist:9253`, `tvmaze:41007`, `tmdb:movie:27205`).
+Bare ids such as `frieren` are the original bundled catalogue, still resolved client-side so
+existing lists, reviews and threads keep working.
+
+When a title is first tracked, a snapshot is written to the `media` table so lists, dashboards
+and recommendations can read it without re-querying providers. That table is **insert-only from
+the client** — allowing updates would let one account rewrite a title's name or poster for
+everyone.
+
+TMDB is reached through `/api/tmdb` (a Vercel edge function, mirrored by a Vite dev middleware),
+so `TMDB_API_KEY` stays server-side and responses are edge-cached for a day. Without the key,
+anime and series search fully and the UI says films are unavailable.
+
 ## Architecture notes
 
-The **catalog is static** (`src/data/catalog.ts`) and ships with the client; only user-generated
-content lives in Postgres. Rows reference titles by string id, so there is no titles table to sync.
+Only user-generated content lives in Postgres.
 
 **Every table has Row Level Security.** Public content is world-readable; writes are restricted to
 the owning account. Vote and post counters are maintained by database triggers and are **not**
