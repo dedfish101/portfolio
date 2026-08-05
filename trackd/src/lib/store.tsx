@@ -39,6 +39,8 @@ interface StoreApi {
   favorites: string[]
   activity: Activity[]
 
+  /** Re-pulls profile + lists from the server (other devices, stale tabs). */
+  refresh: () => Promise<void>
   signUp: (email: string, password: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
@@ -105,22 +107,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return () => { alive = false; sub.subscription.unsubscribe() }
   }, [])
 
+  const loadUserData = useCallback(async (uid: string) => {
+    const [p, e] = await Promise.all([
+      supabase.from('profiles').select('*').eq('user_id', uid).maybeSingle(),
+      supabase.from('entries').select('*').eq('user_id', uid),
+    ])
+    if (p.data) setRow(p.data as DbProfile)
+    setEntries((e.data ?? []) as DbEntry[])
+  }, [])
+
   // Load the signed-in user's profile and lists.
   useEffect(() => {
     if (!user) return
     let alive = true
     void (async () => {
-      const [p, e] = await Promise.all([
-        supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle(),
-        supabase.from('entries').select('*').eq('user_id', user.id),
-      ])
-      if (!alive) return
-      if (p.data) setRow(p.data as DbProfile)
-      setEntries((e.data ?? []) as DbEntry[])
-      setReady(true)
+      await loadUserData(user.id)
+      if (alive) setReady(true)
     })()
     return () => { alive = false }
-  }, [user])
+  }, [user, loadUserData])
 
   const { statuses, ratings, favorites, activity } = useMemo(() => entriesToMaps(entries), [entries])
 
@@ -166,6 +171,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const api = useMemo<StoreApi>(() => ({
     ready, user, profile, prefs, statuses, ratings, favorites, activity,
 
+    async refresh() {
+      if (!user) return
+      await loadUserData(user.id)
+    },
+
     async signUp(email, password) {
       const { error } = await supabase.auth.signUp({ email, password })
       if (error) throw new Error(friendlyError(error))
@@ -205,7 +215,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (error) { setRow(prev); throw new Error(friendlyError(error)) }
       setRow(data as DbProfile)
     },
-  }), [ready, user, profile, prefs, statuses, ratings, favorites, activity, row, entries, patchEntry])
+  }), [ready, user, profile, prefs, statuses, ratings, favorites, activity, row, entries, patchEntry, loadUserData])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

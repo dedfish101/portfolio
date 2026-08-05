@@ -15,11 +15,16 @@
  * TMDB requires this attribution, which the app renders in its footer:
  *   "This product uses the TMDB API but is not endorsed or certified by TMDB."
  */
-import { writeFileSync } from 'node:fs'
+import { writeFileSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { CATALOG } from '../src/data/catalog'
 import type { Title } from '../src/data/catalog'
+
+const HERE = dirname(fileURLToPath(import.meta.url))
+// Wikimedia asks that its image servers not be hotlinked, so anything sourced
+// from there is downloaded into public/posters/ and served from our own domain.
+const UA = 'trackd-poster-sync/1.0 (https://github.com/dedfish101/portfolio)'
 
 export interface PosterEntry {
   image?: string
@@ -29,6 +34,10 @@ export interface PosterEntry {
   link?: string
   linkLabel?: string
 }
+
+// Pick up TMDB_API_KEY from .env.local so the key stays on your machine and never
+// has to be passed on the command line (where it would land in shell history).
+try { process.loadEnvFile(resolve(HERE, '../.env.local')) } catch { /* no local env */ }
 
 const TMDB_KEY = process.env.TMDB_API_KEY ?? ''
 const TMDB_IMG = 'https://image.tmdb.org/t/p/w500'
@@ -124,6 +133,46 @@ async function fromAniList(t: Title): Promise<PosterEntry | null> {
   }
 }
 
+/**
+ * Keyless movie fallback. Wikipedia's REST summary endpoint exposes the article's
+ * lead image, which for films is the theatrical poster — unlike the Action API's
+ * pageimages, which omits non-free media.
+ */
+async function fromWikipedia(t: Title): Promise<PosterEntry | null> {
+  const pages = [t.wiki ?? t.name, `${t.name} (film)`]
+  for (const page of pages) {
+    const url = 'https://en.wikipedia.org/api/rest_v1/page/summary/' +
+      encodeURIComponent(page.replaceAll(' ', '_'))
+    const res = await fetch(url, { headers: { 'User-Agent': UA } })
+    if (!res.ok) continue
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    const d: any = await res.json()
+    const image = d.thumbnail?.source ?? d.originalimage?.source
+    if (!image) continue
+    return {
+      image,
+      synopsis: d.extract ? trim(d.extract) : undefined,
+      meta: [],
+      link: d.content_urls?.desktop?.page,
+      linkLabel: 'Wikipedia',
+    }
+  }
+  return null
+}
+
+/** Mirrors Wikimedia-hosted art locally; other CDNs are fine to link directly. */
+async function localize(id: string, url: string): Promise<string> {
+  if (!url.includes('upload.wikimedia.org')) return url
+  const res = await fetch(url, { headers: { 'User-Agent': UA } })
+  if (!res.ok) return url
+  const raw = (url.split('?')[0].split('.').pop() ?? 'jpg').toLowerCase()
+  const ext = ['jpg', 'jpeg', 'png', 'webp'].includes(raw) ? raw : 'jpg'
+  const dir = resolve(HERE, '../public/posters')
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(resolve(dir, `${id}.${ext}`), Buffer.from(await res.arrayBuffer()))
+  return `/posters/${id}.${ext}`
+}
+
 async function fromTvMaze(t: Title): Promise<PosterEntry | null> {
   const res = await fetch(`https://api.tvmaze.com/singlesearch/shows?q=${encodeURIComponent(t.search ?? t.name)}`)
   if (res.status === 404) return null
@@ -153,12 +202,15 @@ async function resolveTitle(t: Title): Promise<PosterEntry | null> {
     t.type === 'anime'
       ? [fromAniList, fromTmdb]
       : t.type === 'series'
-        ? [fromTmdb, fromTvMaze]
-        : [fromTmdb]
+        ? [fromTmdb, fromTvMaze, fromWikipedia]
+        : [fromTmdb, fromWikipedia]
   for (const fn of chain) {
     try {
       const got = await fn(t)
-      if (got?.image) return got
+      if (got?.image) {
+        got.image = await localize(t.id, got.image)
+        return got
+      }
     } catch (e) {
       console.warn(`  ! ${t.name}: ${(e as Error).message}`)
     }
@@ -168,8 +220,8 @@ async function resolveTitle(t: Title): Promise<PosterEntry | null> {
 
 async function main() {
   if (!TMDB_KEY) {
-    console.warn('TMDB_API_KEY not set — using keyless sources only.')
-    console.warn('Anime and series will resolve; movies will fall back to gradient posters.\n')
+    console.warn('TMDB_API_KEY not set — using keyless sources (AniList / TVMaze / Wikipedia).')
+    console.warn('Set the key for higher-quality art and richer metadata on films.\n')
   }
 
   const out: Record<string, PosterEntry> = {}
@@ -189,7 +241,7 @@ async function main() {
     await sleep(t.type === 'anime' ? 400 : 120)
   }
 
-  const dest = resolve(dirname(fileURLToPath(import.meta.url)), '../src/data/posters.json')
+  const dest = resolve(HERE, '../src/data/posters.json')
   writeFileSync(dest, JSON.stringify(out, null, 1) + '\n')
 
   console.log(`\n${ok}/${CATALOG.length} titles resolved -> src/data/posters.json`)

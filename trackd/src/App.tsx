@@ -2,6 +2,7 @@ import { NavLink, Route, Routes } from 'react-router-dom'
 import { useStore } from './lib/store'
 import { useAuthGate } from './components/Auth'
 import Home from './pages/Home'
+import Dashboard from './pages/Dashboard'
 import Browse from './pages/Browse'
 import TitleDetail from './pages/TitleDetail'
 import Profile from './pages/Profile'
@@ -20,6 +21,7 @@ export default function App() {
         <NavLink to="/" className="brand">track'd</NavLink>
         <div className="nav-links">
           <NavLink to="/" end>Home</NavLink>
+          <NavLink to="/dashboard">Dashboard</NavLink>
           <NavLink to="/browse">Browse</NavLink>
           <NavLink to="/recommendations">For You</NavLink>
           <NavLink to="/upcoming">Upcoming</NavLink>
@@ -45,6 +47,7 @@ export default function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/browse" element={<Browse />} />
           <Route path="/title/:id" element={<TitleDetail />} />
           <Route path="/profile" element={<Profile />} />

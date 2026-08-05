@@ -14,13 +14,25 @@ export interface Recommendation {
  * (weighted genre/tag/type preferences), then scores every unseen title
  * by profile affinity + community prior, with a similar-title explanation.
  */
+/** Deterministic 0..1 from a title id + roll, so a given roll is reproducible. */
+function jitterFor(id: string, roll: number): number {
+  let h = 2166136261 ^ roll
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  return ((h >>> 0) % 10000) / 10000
+}
+
 export function recommend(
   ratings: Record<string, number>,
   statuses: Record<string, WatchStatus>,
   favorites: string[],
   limit = 12,
   visible: (t: Title) => boolean = () => true,
-): { recs: Recommendation[]; topGenres: [string, number][] } {
+  /** Bump to draw a different sample of strong candidates — powers "show me more". */
+  roll = 0,
+): { recs: Recommendation[]; topGenres: [string, number][]; poolSize: number } {
   const genrePref = new Map<string, number>()
   const tagPref = new Map<string, number>()
   const typePref = new Map<string, number>()
@@ -122,7 +134,23 @@ export function recommend(
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5) as [string, number][]
 
-  return { recs: recs.slice(0, limit), topGenres }
+  // Roll 0 is the honest best-first ranking. Later rolls draw a different sample
+  // from a pool of strong candidates, so "show me more" yields genuinely new
+  // titles rather than reshuffling the same ones — then re-sorts by merit.
+  let chosen: Recommendation[]
+  if (roll === 0) {
+    chosen = recs.slice(0, limit)
+  } else {
+    const pool = recs.slice(0, Math.min(recs.length, Math.max(limit * 2, limit + 8)))
+    chosen = pool
+      .map(r => ({ r, k: jitterFor(r.title.id, roll) }))
+      .sort((a, b) => a.k - b.k)
+      .slice(0, limit)
+      .map(x => x.r)
+      .sort((a, b) => b.score - a.score)
+  }
+
+  return { recs: chosen, topGenres, poolSize: recs.length }
 }
 
 /** Similar titles for a detail page, independent of user taste. */

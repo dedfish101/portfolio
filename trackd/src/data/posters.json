@@ -1,4 +1,88 @@
 {
+ "inception": {
+  "image": "/posters/inception.jpg",
+  "synopsis": "Inception is a 2010 science fiction action film written and directed by Christopher Nolan, who also produced it with Emma Thomas, his wife. The film stars Leonardo DiCaprio as a professional thief who steals information by infiltrating the subconscious of his targets. He is offered a chance to have his criminal history erased as payment for the implantation of another person's idea into a target's subconscious. The ensemble cast includes Ken Watanabe, Joseph Gordon-Levitt, Marion Cotillard, Elliot Page, Tom Hardy, Cillian Murphy, Tom Berenger, Dileep Rao, and Michael Caine.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Inception",
+  "linkLabel": "Wikipedia"
+ },
+ "interstellar": {
+  "image": "/posters/interstellar.jpg",
+  "synopsis": "Interstellar is a 2014 epic science fiction film directed by Christopher Nolan, who co-wrote the screenplay with his brother, Jonathan Nolan. It has an ensemble cast led by Matthew McConaughey, Anne Hathaway, Jessica Chastain, Bill Irwin, Ellen Burstyn, and Michael Caine. Set in a dystopian future where Earth is suffering from catastrophic blight and famine, the film follows a group of astronauts who travel through space in search of a new home for humanity.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Interstellar_(film)",
+  "linkLabel": "Wikipedia"
+ },
+ "parasite": {
+  "image": "/posters/parasite.png",
+  "synopsis": "Parasite (Korean: 기생충) is a 2019 South Korean black comedy thriller film directed by Bong Joon Ho, who co-wrote the screenplay with Han Jin-won. It stars Song Kang-ho, Lee Sun-kyun, Cho Yeo-jeong, Choi Woo-shik, Park So-dam, Jang Hye-jin, Park Myung-hoon, and Lee Jung-eun. The film follows a poor family who infiltrate the home and life of a wealthy family.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Parasite_(2019_film)",
+  "linkLabel": "Wikipedia"
+ },
+ "the-dark-knight": {
+  "image": "/posters/the-dark-knight.jpg",
+  "synopsis": "The Dark Knight is a 2008 superhero film directed by Christopher Nolan, from a screenplay co-written with his brother Jonathan. Based on the DC Comics superhero Batman, it is the sequel to Batman Begins (2005), and the second installment in The Dark Knight trilogy. The plot follows the vigilante Batman, police lieutenant James Gordon, and district attorney Harvey Dent, who form an alliance to dismantle organized crime in Gotham City. Their efforts are derailed by the Joker, an anarchistic mastermind who seeks to test how far Batman will go to save the city from chaos.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/The_Dark_Knight",
+  "linkLabel": "Wikipedia"
+ },
+ "spirited-away": {
+  "image": "/posters/spirited-away.png",
+  "synopsis": "Spirited Away is a 2001 Japanese animated fantasy film written and directed by Hayao Miyazaki. It was produced by Toshio Suzuki, animated by Studio Ghibli, and distributed by Toho. The film stars Rumi Hiiragi, alongside Miyu Irino, Mari Natsuki, Takashi Naito, Yasuko Sawaguchi, Tsunehiko Kamijō, Takehiko Ono, and Bunta Sugawara. It follows a young girl named Chihiro \"Sen\" Ogino, who moves to a new neighborhood and inadvertently enters the world of kami.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Spirited_Away",
+  "linkLabel": "Wikipedia"
+ },
+ "dune-part-two": {
+  "image": "/posters/dune-part-two.jpeg",
+  "synopsis": "Dune: Part Two is a 2024 American epic space opera film directed by Denis Villeneuve, from a screenplay he wrote with Jon Spaihts. It is a sequel to Dune (2021) in a two-part adaptation of Frank Herbert's 1965 science fiction novel, and the second of a trilogy of films developed by Legendary Pictures. Timothée Chalamet leads a twelve-actor ensemble cast as Paul Atreides, an exiled monarch who allies with the Fremen peoples to overthrow the House Harkonnen as part of a preordained quest to become the celestial messiah.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Dune%3A_Part_Two",
+  "linkLabel": "Wikipedia"
+ },
+ "everything-everywhere": {
+  "image": "/posters/everything-everywhere.jpg",
+  "synopsis": "Everything Everywhere All at Once is a 2022 American independent absurdist comedy-drama film written and directed by Daniel Kwan and Daniel Scheinert, who produced it with Anthony and Joe Russo and Jonathan Wang. The film incorporates media from several genres, including surreal comedy, science fiction, fantasy, martial arts films, immigrant narrative, and animation. Michelle Yeoh stars as Evelyn Quan Wang, a Chinese-American immigrant who, while being audited by the IRS, discovers that she must connect with parallel universe versions of herself to prevent a powerful being from destroying the multiverse.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Everything_Everywhere_All_at_Once",
+  "linkLabel": "Wikipedia"
+ },
+ "whiplash": {
+  "image": "/posters/whiplash.jpg",
+  "synopsis": "Whiplash is a 2014 American drama film written and directed by Damien Chazelle, and starring Miles Teller, J. K. Simmons, and Paul Reiser. It focuses on an ambitious music student and aspiring jazz drummer (Teller), who is pushed to his limit by his abusive instructor (Simmons).",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Whiplash_(2014_film)",
+  "linkLabel": "Wikipedia"
+ },
+ "get-out": {
+  "image": "/posters/get-out.png",
+  "synopsis": "Get Out is a 2017 American psychological horror film written, co-produced, and directed by Jordan Peele in his directorial debut. It stars Daniel Kaluuya, Allison Williams, Lil Rel Howery, LaKeith Stanfield, Bradley Whitford, Caleb Landry Jones, Stephen Root, Catherine Keener, and Betty Gabriel. The plot follows a young black man (Chris), who uncovers shocking secrets when he meets the family of his white girlfriend (Rose).",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Get_Out",
+  "linkLabel": "Wikipedia"
+ },
+ "spider-verse": {
+  "image": "/posters/spider-verse.jpg",
+  "synopsis": "Spider-Man: Across the Spider-Verse is a 2023 American animated superhero film based on the Marvel Comics character Spider-Man. Directed by Joaquim Dos Santos, Kemp Powers and Justin K. Thompson from a screenplay by the writing team of Phil Lord and Christopher Miller and Dave Callaham, it is the sequel to Spider-Man: Into the Spider-Verse (201. It stars Shameik Moore as Miles Morales, with Hailee Steinfeld, Brian Tyree Henry, Luna Lauren Velez, Jake Johnson, Jason Schwartzman, Issa Rae, Karan Soni, Shea Whigham, Greta Lee, Daniel Kaluuya, Mahershala Ali, and Oscar Isaac in supporting roles.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Spider-Man%3A_Across_the_Spider-Verse",
+  "linkLabel": "Wikipedia"
+ },
+ "oldboy": {
+  "image": "/posters/oldboy.jpg",
+  "synopsis": "Oldboy (Korean: 올드보이) is a 2003 South Korean action thriller film directed and co-written by Park Chan-wook. A loose adaptation of the Japanese manga Old Boy by Garon Tsuchiya and Nobuaki Minegishi, the film follows Oh Dae-su, who is imprisoned for 15 years without knowing the identity of his captor or his captor's motives. When he is released, Dae-su finds himself trapped in a web of conspiracy and violence as he seeks revenge against his captor and falls in love with a young sushi chef, Mi-do.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Oldboy_(2003_film)",
+  "linkLabel": "Wikipedia"
+ },
+ "la-la-land": {
+  "image": "/posters/la-la-land.png",
+  "synopsis": "La La Land is a 2016 American musical romantic comedy drama film written and directed by Damien Chazelle. It stars Ryan Gosling and Emma Stone as a struggling jazz pianist and an aspiring actress who meet and fall in love while pursuing their dreams in Los Angeles. The supporting cast includes John Legend, Rosemarie DeWitt, Finn Wittrock, and J. K. Simmons.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/La_La_Land",
+  "linkLabel": "Wikipedia"
+ },
  "breaking-bad": {
   "image": "https://static.tvmaze.com/uploads/images/original_untouched/501/1253519.jpg",
   "synopsis": "Breaking Bad follows protagonist Walter White, a chemistry teacher who lives in New Mexico with his wife and teenage son who has cerebral palsy. White is diagnosed with Stage III cancer and given a prognosis of two years left to live. With a new sense of fearlessness based on his medical prognosis, and a desire to secure his family's financial security, White chooses to enter a dangerous world of drugs and crime and ascends to power in this world.",
@@ -505,6 +589,13 @@
   "link": "https://anilist.co/anime/101922",
   "linkLabel": "AniList"
  },
+ "dune-part-three": {
+  "image": "/posters/dune-part-three.jpg",
+  "synopsis": "Dune: Part Three is an upcoming American epic space opera film co-produced and directed by Denis Villeneuve, who co-wrote the screenplay with Brian K. Vaughan. Based on the 1969 novel Dune Messiah by Frank Herbert, it is the sequel to Dune: Part Two (2024) and the third and final film in Villeneuve's Dune film trilogy. The film stars Timothée Chalamet, Zendaya, Jason Momoa, Florence Pugh, Rebecca Ferguson, Isaach de Bankolé, Charlotte Rampling, Anya Taylor-Joy, Robert Pattinson, and Javier Bardem.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Dune%3A_Part_Three",
+  "linkLabel": "Wikipedia"
+ },
  "stranger-things-5": {
   "image": "https://static.tvmaze.com/uploads/images/original_untouched/595/1489169.jpg",
   "synopsis": "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl.",
@@ -576,6 +667,13 @@
   "link": "https://anilist.co/anime/182255",
   "linkLabel": "AniList"
  },
+ "avatar-fire-and-ash": {
+  "image": "/posters/avatar-fire-and-ash.jpeg",
+  "synopsis": "Avatar: Fire and Ash is a 2025 American epic science fiction film directed by James Cameron from a screenplay he co-wrote with Rick Jaffa and Amanda Silver. Produced by Lightstorm Entertainment, it is the third installment in the Avatar film series and the sequel to Avatar: The Way of Water (2022). The film features Sam Worthington, Zoe Saldaña, Sigourney Weaver, Stephen Lang, and Kate Winslet reprising their roles from previous films.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Avatar%3A_Fire_and_Ash",
+  "linkLabel": "Wikipedia"
+ },
  "one-punch-man-s3": {
   "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx153800-8SpzdHOaZCoU.jpg",
   "synopsis": "The third season of One Punch Man.  \nSaitama is a hero who only became a hero for fun. After three years of \"special training,\" he’s become so strong that he's practically invincible. In fact, he's too strong—even his mightiest opponents are taken out with a single punch. Alongside Genos, his faithful disciple, Saitama performs his official hero duties as a member of the Hero Association.  \nOne day, monsters claiming to be from the Monster Association suddenly appeared, taking a child of Hero Association executive hostage.",
@@ -600,5 +698,19 @@
   ],
   "link": "https://anilist.co/anime/153800",
   "linkLabel": "AniList"
+ },
+ "the-batman-2": {
+  "image": "/posters/the-batman-2.png",
+  "synopsis": "The Batman: Part II is an upcoming American superhero film directed by Matt Reeves from a screenplay he wrote with Mattson Tomlin. Based on the DC Comics character Batman, it is the sequel to The Batman (2022). Robert Pattinson stars as Bruce Wayne / Batman alongside Jeffrey Wright, Andy Serkis, Colin Farrell, Sebastian Stan, Scarlett Johansson, and Charles Dance. Set during the winter, Batman investigates further corruption after the flooding of Gotham City. Warner Bros.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/The_Batman%3A_Part_II",
+  "linkLabel": "Wikipedia"
+ },
+ "spider-verse-3": {
+  "image": "/posters/spider-verse-3.jpg",
+  "synopsis": "Spider-Man: Beyond the Spider-Verse is an upcoming American animated superhero film based on Marvel Comics featuring the character Miles Morales / Spider-Man. Directed by Bob Persichetti and Justin K. Thompson from a screenplay by the writing team of Phil Lord and Christopher Miller alongside David Callaham, it is the direct sequel to Spider-Man: Across the Spider-Verse (2023) and the final installment in the Spider-Verse trilogy.",
+  "meta": [],
+  "link": "https://en.wikipedia.org/wiki/Spider-Man%3A_Beyond_the_Spider-Verse",
+  "linkLabel": "Wikipedia"
  }
 }
