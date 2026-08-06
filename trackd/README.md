@@ -5,6 +5,9 @@ A movie, series & anime tracker with real user accounts, a recommendation engine
 **Stack:** React + TypeScript + Vite (frontend) · Supabase (Postgres, Auth, Row Level Security) · Vercel (hosting).
 Runs on the free tier of both — **$0/month** at this scale.
 
+> **Maintaining or handing this off?** See [MAINTENANCE.md](MAINTENANCE.md) for the
+> architecture, security model, operational runbook and known gaps.
+
 ## Run locally
 
 ```sh
