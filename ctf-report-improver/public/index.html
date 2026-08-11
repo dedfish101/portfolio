@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ctf-report-improver</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a0b'/%3E%3Cpath d='M9 11l5 5-5 5' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M17 21h7' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="0.75" y="0.75" width="30.5" height="30.5" rx="7" fill="none" stroke="var(--line-2)" stroke-width="1.5"/>
+        <path d="M9 11l5 5-5 5" stroke="var(--fg)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M17 21h7" stroke="var(--fg)" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">ctf-report-improver<span class="cursor">▋</span></span>
+    </div>
+    <div id="key-status" class="pill">checking…</div>
+  </header>
+
+  <div class="cmdbar">
+    <code><span class="prompt">$</span> <span id="cmd-line">improve --awaiting-input</span></code>
+  </div>
+
+  <main class="layout">
+    <section class="workspace">
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload report files">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+          <polyline points="7 9 12 4 17 9"/>
+          <line x1="12" y1="4" x2="12" y2="16"/>
+        </svg>
+        <p class="dz-title">drop a report folder, markdown, or .zip</p>
+        <p class="dz-sub">processed in memory · nothing stored server-side</p>
+        <div class="dz-actions">
+          <button id="pick-folder" class="btn ghost" type="button">select folder</button>
+          <button id="pick-files" class="btn ghost" type="button">select files / zip</button>
+        </div>
+        <input type="file" id="folder-input" webkitdirectory multiple hidden>
+        <input type="file" id="files-input" multiple hidden accept=".md,.markdown,.zip,image/*">
+      </div>
+
+      <div id="manifest" class="manifest hidden">
+        <div class="seg-item"><span class="k">files</span><b id="stat-files">0</b></div>
+        <div class="seg-item"><span class="k">markdown</span><b id="stat-md">0</b></div>
+        <div class="seg-item"><span class="k">images</span><b id="stat-images">0</b></div>
+        <div class="seg-item"><span class="k">size</span><b id="stat-size">0&nbsp;KB</b></div>
+        <button id="clear-btn" class="btn ghost xsmall" type="button">clear</button>
+      </div>
+
+      <div id="tree-panel" class="panel hidden">
+        <div class="panel-head"><h2>files</h2><span class="mono faint">$ tree</span></div>
+        <div id="tree" class="tree"></div>
+      </div>
+
+      <div id="progress-panel" class="panel hidden">
+        <div class="panel-head"><h2>processing</h2><span id="progress-count" class="mono dim"></span></div>
+        <div class="bar"><div id="bar-fill"></div></div>
+        <p id="progress-file" class="mono dim"></p>
+      </div>
+
+      <div id="error-box" class="notice error hidden" role="alert">
+        <span class="tag">error</span><span id="error-text" class="notice-body"></span>
+      </div>
+      <div id="warnings" class="notice warn hidden">
+        <span class="tag">warn</span><div id="warnings-body" class="notice-body"></div>
+      </div>
+
+      <div id="preview-panel" class="panel hidden">
+        <div class="panel-head">
+          <h2>diff</h2>
+          <div class="preview-controls">
+            <select id="file-select" aria-label="Report file to preview"></select>
+            <div class="seg" role="tablist">
+              <button id="view-raw" class="active" type="button">raw</button>
+              <button id="view-rendered" type="button">rendered</button>
+            </div>
+          </div>
+        </div>
+        <div class="diff">
+          <div class="pane">
+            <div class="pane-head"><span class="marker">○</span> original</div>
+            <div id="pane-before" class="md"></div>
+          </div>
+          <div class="pane improved">
+            <div class="pane-head"><span class="marker">●</span> improved</div>
+            <div id="pane-after" class="md"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="panel">
+        <h2>config</h2>
+
+        <label class="field-label" for="model-select">model</label>
+        <div class="select-wrap">
+          <select id="model-select">
+            <option value="llama-3.3-70b-versatile" selected>llama-3.3-70b-versatile · best</option>
+            <option value="llama-3.1-8b-instant">llama-3.1-8b-instant · fastest</option>
+            <option value="openai/gpt-oss-120b">gpt-oss-120b</option>
+            <option value="moonshotai/kimi-k2-instruct">kimi-k2-instruct</option>
+            <option value="mixtral-8x7b-32768">mixtral-8x7b-32768 · retired</option>
+          </select>
+        </div>
+
+        <label class="field-label" for="category-select">category</label>
+        <div class="select-wrap">
+          <select id="category-select">
+            <option value="">auto / mixed</option>
+            <option value="web">web</option>
+            <option value="pwn">pwn / binary</option>
+            <option value="crypto">crypto</option>
+            <option value="reverse engineering">reverse</option>
+            <option value="forensics">forensics</option>
+            <option value="osint">osint</option>
+            <option value="misc">misc</option>
+          </select>
+        </div>
+
+        <div class="field-label">options</div>
+        <label class="check">
+          <input type="checkbox" id="opt-depth" checked>
+          <span class="box"></span>
+          <span class="lbl">technical depth</span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="opt-cvss">
+          <span class="box"></span>
+          <span class="lbl">include CVSS scores</span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="opt-summary" checked>
+          <span class="box"></span>
+          <span class="lbl">add summary section</span>
+        </label>
+
+        <label class="field-label" for="custom-instructions">custom_prompt</label>
+        <textarea id="custom-instructions" placeholder="explain WHY each payload works. keep flags in a final ## Flag section. british spelling."></textarea>
+
+        <div class="rate">
+          <label class="field-label">groq free-tier usage</label>
+          <div class="rate-bar"><div id="rate-fill"></div></div>
+          <span id="rate-label" class="mono faint">no usage data yet</span>
+        </div>
+
+        <button id="process-btn" class="btn primary" type="button" disabled>improve reports</button>
+        <a id="download-btn" class="btn secondary" hidden download>download improved .zip</a>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <span class="mono faint">stateless · in-memory · reads <b>GROQ_API_KEY</b> from env · jobs expire after 30m</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
