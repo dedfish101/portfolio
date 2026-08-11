@@ -43,8 +43,8 @@ export const site = {
   tracks: [
     { title: "lofi", artist: "lofi", src: "/audio/track1.mp3" },
     { title: "zoltraak", artist: "frieren", src: "/audio/track2.mp3" },
-    { title: "track3", artist: "lofi", src: "/audio/track3.mp3" },
-    { title: "track4", artist: "lofi", src: "/audio/track4.mp3" },
+    { title: "golden wind", artist: "jojo", src: "/audio/track3.mp3" },
+    { title: "wisdom", artist: "atharva", src: "/audio/track4.mp3" },
   ],
 
   // Consolidated social footer — `icon` maps to a crisp inline SVG.
